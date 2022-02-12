@@ -34,8 +34,15 @@ while running:
                 speed = 0.1
                 #print(playerX,playerY)
         if event.type == pygame.KEYUP:
-            speed = 0
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                speed = 0
 
     playerX+=speed
+
+    if playerX <= 0:
+       playerX=0
+    if playerX >= 736:
+       playerX=736
+
     player(playerX,playerY)
     pygame.display.update()
