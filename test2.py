@@ -1,4 +1,7 @@
+import random
+
 import pygame
+import math
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -19,22 +22,38 @@ playerX = 368
 playerY = 480
 speed = 0
 
+#enemy
+enemyImg = pygame.image.load("assets/spaceship.png")
+enemyX = random.randint(0,730)
+enemyY = 0
+enemySpeedX = 2
+enemySpeedY = 0
+
 #shoot
 shootImg = pygame.image.load("assets/shoot.png")
-shootX=400
-shootY=400
-shootSpeed=10
+bulletX=0
+bulletY=0
+shootSpeed=5
 shootState = "ready"
 
 def player(x,y):
     screen.blit(playerImg,(x,y))
+
+def enemy(x,y):
+    screen.blit(enemyImg, (x, y))
 
 def shootFromShip(x,y):
     global shootState
     shootState = "throw"
     screen.blit(shootImg,(x,y-40))
 
+def isCollision(enemyX, enemyY, bulletX, bulletY):
+    distance = math.sqrt(math.pow(enemyX-bulletX,2) + math.pow(enemyY-bulletY,2))
+
+
 running = True
+
+#przebieg gry
 while running:
     screen.fill((60,100,60))
     for event in pygame.event.get():
@@ -53,9 +72,11 @@ while running:
         #         speed = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                print("SPACE")
-                bulletY=playerY
-                shootFromShip(playerX,bulletY)
+                if shootState is 'ready':
+                    print("SPACE")
+                    bulletX = playerX
+                    bulletY = playerY
+                    shootFromShip(bulletX,bulletY)
 
         keys = pygame.key.get_pressed()
 
@@ -74,9 +95,24 @@ while running:
     if playerX >= 736:
        playerX=736
 
+    if enemyX<=0 or enemyX>736:
+        enemySpeedX*=-1
+        enemySpeedY += 32
+
+    enemyX += enemySpeedX
+    enemyY = enemySpeedY
+    print(enemySpeedY)
+
     player(playerX,playerY)
+    enemy(enemyX,enemyY)
+
+    if bulletY<=-40:
+        bulletY=-50
+        shootState = 'ready'
+
+
     if shootState is "throw":
-        shootFromShip(playerX,bulletY)
+        shootFromShip(bulletX,bulletY)
         bulletY-=shootSpeed
 
     pygame.display.flip()
